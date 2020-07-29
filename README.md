@@ -1,4 +1,4 @@
-# core
+# .Net Core Projects
 .net core samples
 
 ## Sample1
