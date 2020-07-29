@@ -1,0 +1,2 @@
+# core
+.net core samples
