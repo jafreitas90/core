@@ -161,7 +161,7 @@ namespace CurrencyConverter.UI.ViewModels
 
                 if (SelectedToCurrency == null || SelectedFromCurrency == null)
                 {
-                    SelectedToCurrency = new CurrencyWrapper(new Rate(ExchangeRates.Base.CurrencyType, 1));
+                    SelectedToCurrency = new CurrencyWrapper(new Rate(SelectedToCurrency?.CurrencyType ?? ExchangeRates.Base.CurrencyType, SelectedToCurrency?.Value ?? 1));
                     SelectedToCurrency.CurrencyChangedEvent += ExchangeToFromCurrency;
 
                     SelectedFromCurrency = new CurrencyWrapper(new Rate(ExchangeRates.Base.CurrencyType, 1));

@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <Style TargetType="ComboBox">
+        <Setter Property="VerticalContentAlignment"
+                Value="Center" />
+        <Setter Property="Width"
+                Value="100" />
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="FontSize"
+                Value="16" />
+    </Style>
+</ResourceDictionary>
