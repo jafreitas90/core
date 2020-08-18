@@ -1,0 +1,94 @@
+﻿<Window x:Class="CurrencyConverter.UI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:CurrencyConverter.UI.Converters"
+        xmlns:localization="clr-namespace:CurrencyConverter.UI.Resources"
+        mc:Ignorable="d"
+        Title="{x:Static localization:Resource.ApplicationTitle}"
+        Height="300"
+        Width="500"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="ToolWindow"
+        ResizeMode="NoResize"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:RoundDecimalConverter x:Key="RoundDecimalConverter" />
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="{x:Static localization:Resource.ApplicationTitle}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="40"
+                   Grid.Row="0" />
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="1"
+                    HorizontalAlignment="Right">
+            <TextBlock 
+                Text="{Binding ExchangeRates.Date, 
+                 StringFormat='Precision Date: {0}'}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontSize="12"
+                Margin="0,0,10,0"/>
+
+            <Button Command="{Binding SyncCommand}"
+                    Content="{x:Static localization:Resource.SyncDataButton}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"
+                    Width="100"
+                    HorizontalAlignment="Right" />
+        </StackPanel>
+        <Grid HorizontalAlignment="Center"
+              Background="AliceBlue"
+              Grid.Row="2"
+              IsEnabled="{Binding IsDataSynchronized}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="0">
+                <TextBox  Width="100"
+                          VerticalContentAlignment="Center"
+                          TextAlignment="Center"
+                          FontSize="16"
+                          Text="{Binding SelectedFromCurrency.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource RoundDecimalConverter}, ConverterParameter=2}"
+                          Height="40" />
+                <ComboBox Width="100"
+                          Margin="20,0,0,0"
+                          DisplayMemberPath="DisplayValue"
+                          SelectedValuePath="DisplayValue"
+                          VerticalContentAlignment="Center"
+                          FontSize="16"
+                          SelectedValue="{Binding SelectedFromCurrency.CurrencyType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding CurrencyTypeGroupLookup}"
+                          Height="40" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        Grid.Row="1">
+                <TextBox  Width="100" VerticalContentAlignment="Center"
+                          TextAlignment="Center" FontSize="16"
+                          Text="{Binding SelectedToCurrency.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource RoundDecimalConverter}, ConverterParameter=2}"
+                          Height="40" />
+                <ComboBox Width="100"
+                          Margin="20,0,0,0"
+                          DisplayMemberPath="DisplayValue"
+                          SelectedValuePath="DisplayValue"
+                          VerticalContentAlignment="Center"
+                          FontSize="16"
+                          SelectedValue="{Binding SelectedToCurrency.CurrencyType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding CurrencyTypeGroupLookup}"
+                          Height="40" />
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>
