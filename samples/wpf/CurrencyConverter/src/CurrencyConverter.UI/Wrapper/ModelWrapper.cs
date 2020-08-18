@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using CurrencyConverter.UI.ViewModels;
 
@@ -18,11 +15,7 @@ namespace CurrencyConverter.UI.Wrapper
                 throw new ArgumentNullException("model");
             }
             Model = model;
-            //_originalValues = new Dictionary<string, object>();
-            //_trackingObjects = new List<IValidatableTrackingObject>();
-            //InitializeComplexProperties(model);
             InitializeCollectionProperties(model);
-            //Validate();
         }
 
         protected virtual void InitializeCollectionProperties(T model)
@@ -41,25 +34,9 @@ namespace CurrencyConverter.UI.Wrapper
             var currentValue = propertyInfo.GetValue(Model);
             if (!Equals(currentValue, newValue))
             {
-                //UpdateOriginalValue(currentValue, newValue, propertyName);
                 propertyInfo.SetValue(Model, newValue);
-                //Validate();
                 OnPropertyChanged(propertyName);
-                //OnPropertyChanged(propertyName + "IsChanged");
             }
-        }
-
-        protected void RegisterCollection<TWrapper, TModel>(
-         ObservableCollection<TWrapper> wrapperCollection,
-         List<TModel> modelCollection) where TWrapper : ModelWrapper<TModel>
-        {
-            wrapperCollection.CollectionChanged += (s, e) =>
-            {
-                modelCollection.Clear();
-                modelCollection.AddRange(wrapperCollection.Select(w => w.Model));
-                //Validate();
-            };
-          //  RegisterTrackingObject(wrapperCollection);
         }
     }
 }

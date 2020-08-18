@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -9,18 +8,18 @@ using CurrencyConverter.Model;
 using CurrencyConverter.Services.Synchronizers;
 using CurrencyConverter.UI.DataProvider;
 using CurrencyConverter.UI.DataProvider.Lookups;
+using CurrencyConverter.UI.Utilities;
 using CurrencyConverter.UI.Utilities.Settings;
 using CurrencyConverter.UI.Wrapper;
-using CurrencyConverter.UI.Utilities;
 
 namespace CurrencyConverter.UI.ViewModels
 {
     public class MainViewModel : Observable
     {
-        public bool _isBusy;
-        public bool _isDataSynchronized;
+        #region Fields
+        private bool _isBusy;
+        private bool _isDataSynchronized;
         private ISynchronizer _synchronizer;
-
         private ILookupProvider<Rate> _currencyTypeLookupProvider;
         private ExchangeRatesWrappper _exchangeRates;
         private CurrencyWrapper _selectedFromCurrency;
@@ -28,6 +27,7 @@ namespace CurrencyConverter.UI.ViewModels
         private IEnumerable<LookupItem> _currencyTypeGroupLookup;
         private IExchangeRateDataProvider _exchangeRateDataProvider;
         private float _from;
+        #endregion
 
         #region Commands
         public ICommand SyncCommand { get; private set; }
@@ -58,6 +58,7 @@ namespace CurrencyConverter.UI.ViewModels
         }
         #endregion
 
+        #region Properties
         public float From
         {
             get { return _from; }
@@ -110,18 +111,22 @@ namespace CurrencyConverter.UI.ViewModels
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region Constructor
         public MainViewModel(ISynchronizer synchronizer, ILookupProvider<Rate> currencyTypeLookupProvider, IExchangeRateDataProvider exchangeRateDataProvider)
         {
             _exchangeRateDataProvider = exchangeRateDataProvider;
             _currencyTypeLookupProvider = currencyTypeLookupProvider;
             _synchronizer = synchronizer;
-            SyncCommand = new AsyncCommand(canExecute: _ => !IsBusy, execute: OnSyncExecute, onException: OnSyncException);
+            SyncCommand = new AsyncCommand(canExecute: _ => !IsBusy, execute: OnSyncDataExecute, onException: OnSyncDataException);
 
             // load data
             Task.Run(async () => await LoadAsync()).GetAwaiter().GetResult();
         }
+        #endregion
 
+        #region Private Methods
         private void ExchangeFromToCurrency()
         {
             CalculeExchangeRate(SelectedFromCurrency, SelectedToCurrency);
@@ -146,7 +151,7 @@ namespace CurrencyConverter.UI.ViewModels
             // Get currencies types to lookup
             CurrencyTypeGroupLookup = await _currencyTypeLookupProvider.GetLookupAsync();
 
-            // if no data
+            // if no data (first time loading)
             if(CurrencyTypeGroupLookup == null)
             {
                 IsDataSynchronized = false;
@@ -172,7 +177,7 @@ namespace CurrencyConverter.UI.ViewModels
             }
         }
 
-        private async Task OnSyncExecute()
+        private async Task OnSyncDataExecute()
         {
             try
             {
@@ -186,12 +191,14 @@ namespace CurrencyConverter.UI.ViewModels
             }
         }
 
-        private void OnSyncException(Exception ex)
+        private void OnSyncDataException(Exception ex)
         {
             // show some message, write to logs..
             MessageBox.Show("Something went wrong. Contact the system administration please.");
         }
+        #endregion
 
+        #region Internal
         internal void SaveSettings()
         {
             if(SelectedFromCurrency != null && SelectedToCurrency != null)
@@ -209,5 +216,6 @@ namespace CurrencyConverter.UI.ViewModels
                 SelectedToCurrency.CurrencyType = SettingsService.GetValue(Constants.SettingCurrentyTypeTo);
             }
         }
+        #endregion
     }
 }

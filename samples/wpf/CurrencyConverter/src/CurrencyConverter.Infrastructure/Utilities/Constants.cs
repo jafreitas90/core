@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CurrencyConverter.Infrastructure.Utilities
+﻿namespace CurrencyConverter.Infrastructure.Utilities
 {
     public static class Constants
     {

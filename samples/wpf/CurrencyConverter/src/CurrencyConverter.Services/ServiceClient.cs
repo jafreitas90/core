@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace CurrencyConverter.Services
 {
+    /// <inheritdoc />
     class ServiceClient : IServiceClient
     {
         private readonly HttpClient _httpClient;
@@ -15,6 +16,7 @@ namespace CurrencyConverter.Services
             _httpClient = httpClient;
         }
 
+        /// <inheritdoc />
         public async Task<T> GetDataAsync<T>(string inputUrl, CancellationToken cancellationToken = default)
         {
             var response = await _httpClient.GetAsync(inputUrl, cancellationToken);
