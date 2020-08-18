@@ -36,7 +36,6 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Margin="0,0,10,0"/>
-
             <Button Command="{Binding SyncCommand}"
                     Content="{x:Static localization:Resource.SyncDataButton}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
@@ -52,17 +51,13 @@
                         Grid.Row="0">
                 <TextBox  Text="{Binding SelectedFromCurrency.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource RoundDecimalConverter}, ConverterParameter=2}"/>
                 <ComboBox Margin="20,0,0,0"
-                          DisplayMemberPath="DisplayValue"
-                          SelectedValuePath="DisplayValue"
-                          SelectedValue="{Binding SelectedFromCurrency.CurrencyType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedItem="{Binding SelectedFromCurrency.CurrencyType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{Binding CurrencyTypeGroupLookup}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="1">
                 <TextBox  Text="{Binding SelectedToCurrency.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource RoundDecimalConverter}, ConverterParameter=2}" />
                 <ComboBox Margin="20,0,0,0"
-                          DisplayMemberPath="DisplayValue"
-                          SelectedValuePath="DisplayValue"
-                          SelectedValue="{Binding SelectedToCurrency.CurrencyType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedItem="{Binding SelectedToCurrency.CurrencyType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{Binding CurrencyTypeGroupLookup}"/>
             </StackPanel>
         </Grid>

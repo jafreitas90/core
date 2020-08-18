@@ -6,6 +6,6 @@ namespace CurrencyConverter.UI.DataProvider.Lookups
 {
     public interface ILookupProvider<T>
     {
-        Task<IEnumerable<LookupItem>> GetLookupAsync(CancellationToken ct = default);
+        Task<IEnumerable<string>> GetLookupAsync(CancellationToken ct = default);
     }
 }

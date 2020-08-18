@@ -24,7 +24,7 @@ namespace CurrencyConverter.UI.ViewModels
         private ExchangeRatesWrappper _exchangeRates;
         private CurrencyWrapper _selectedFromCurrency;
         private CurrencyWrapper _selectedToCurrency;
-        private IEnumerable<LookupItem> _currencyTypeGroupLookup;
+        private IEnumerable<string> _currencyTypeGroupLookup;
         private IExchangeRateDataProvider _exchangeRateDataProvider;
         private float _from;
         #endregion
@@ -102,7 +102,7 @@ namespace CurrencyConverter.UI.ViewModels
             }
         }
 
-        public IEnumerable<LookupItem> CurrencyTypeGroupLookup
+        public IEnumerable<string> CurrencyTypeGroupLookup
         {
             get { return _currencyTypeGroupLookup; }
             set
@@ -152,7 +152,7 @@ namespace CurrencyConverter.UI.ViewModels
             CurrencyTypeGroupLookup = await _currencyTypeLookupProvider.GetLookupAsync();
 
             // if no data (first time loading)
-            if(CurrencyTypeGroupLookup == null)
+            if (CurrencyTypeGroupLookup == null)
             {
                 IsDataSynchronized = false;
             }

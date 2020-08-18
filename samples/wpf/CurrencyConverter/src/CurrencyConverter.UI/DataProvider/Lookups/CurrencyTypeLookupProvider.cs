@@ -15,14 +15,11 @@ namespace CurrencyConverter.UI.DataProvider.Lookups
             _repository = repository;
         }
 
-        public async Task<IEnumerable<LookupItem>> GetLookupAsync(CancellationToken ct = default)
+        public async Task<IEnumerable<string>> GetLookupAsync(CancellationToken ct = default)
         {
             var result = await _repository.GetDataAsync();
-            return result?.Rates.Select(f => new LookupItem
-                    {
-                        DisplayValue = f.CurrencyType
-                    })
-                    .OrderBy(l => l.DisplayValue)
+            return result?.Rates.Select(f => f.CurrencyType)
+                    .OrderBy(l => l)
                     .ToList();
         }
     }
