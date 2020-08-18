@@ -1,5 +1,6 @@
-﻿using System;
-using CurrencyConverter.Model;
+﻿using CurrencyConverter.Model;
+using CurrencyConverter.UI.Model.Enums;
+using static CurrencyConverter.UI.Model.Delegates;
 
 namespace CurrencyConverter.UI.Wrapper
 {
@@ -17,7 +18,7 @@ namespace CurrencyConverter.UI.Wrapper
                 if (value != null && value != CurrencyType)
                 {
                     SetValue(value);
-                    CurrencyChangedEvent?.Invoke();
+                    CurrencyChangedEvent?.Invoke(CurrencyChangePropertyEnum.CurrencyType);
                 }
             }
         }
@@ -30,11 +31,11 @@ namespace CurrencyConverter.UI.Wrapper
                 if(value != Value)
                 {
                     SetValue(value);
-                    CurrencyChangedEvent?.Invoke();
+                    CurrencyChangedEvent?.Invoke(CurrencyChangePropertyEnum.Value);
                 }
             }
         }
 
-        public event Action CurrencyChangedEvent;
+        public event CurrencyChangeDelegate CurrencyChangedEvent;
     }
 }

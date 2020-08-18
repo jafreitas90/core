@@ -8,6 +8,7 @@ using CurrencyConverter.Model;
 using CurrencyConverter.Services.Synchronizers;
 using CurrencyConverter.UI.DataProvider;
 using CurrencyConverter.UI.DataProvider.Lookups;
+using CurrencyConverter.UI.Model.Enums;
 using CurrencyConverter.UI.Utilities;
 using CurrencyConverter.UI.Utilities.Settings;
 using CurrencyConverter.UI.Wrapper;
@@ -127,14 +128,21 @@ namespace CurrencyConverter.UI.ViewModels
         #endregion
 
         #region Private Methods
-        private void ExchangeFromToCurrency()
+        private void ExchangeFromToCurrency(CurrencyChangePropertyEnum changePropertyEnum)
         {
             CalculeExchangeRate(SelectedFromCurrency, SelectedToCurrency);
         }
 
-        private void ExchangeToFromCurrency()
+        private void ExchangeToFromCurrency(CurrencyChangePropertyEnum changePropertyEnum)
         {
-            CalculeExchangeRate(SelectedToCurrency, SelectedFromCurrency);
+            var from = SelectedToCurrency;
+            var to = SelectedFromCurrency;
+            if (changePropertyEnum == CurrencyChangePropertyEnum.CurrencyType)
+            {
+                from = SelectedFromCurrency;
+                to = SelectedToCurrency;
+            }
+            CalculeExchangeRate(from, to);
         }
 
         private void CalculeExchangeRate(CurrencyWrapper from, CurrencyWrapper to)
@@ -143,11 +151,14 @@ namespace CurrencyConverter.UI.ViewModels
             var toCurrencyType = to.CurrencyType;
             var amount = from.Value;
 
+            UnSubscribeCalculeExhangeCurrencyEvents();
             to.Value = ExchangeRates.Model.GetExchangeRate(fromCurrencyType, toCurrencyType, amount);
+            SubscribeCalculeExhangeCurrencyEvents();
         }
 
         private async Task LoadAsync()
         {
+            UnSubscribeCalculeExhangeCurrencyEvents();
             // Get currencies types to lookup
             CurrencyTypeGroupLookup = await _currencyTypeLookupProvider.GetLookupAsync();
 
@@ -166,14 +177,39 @@ namespace CurrencyConverter.UI.ViewModels
 
                 if (SelectedToCurrency == null || SelectedFromCurrency == null)
                 {
-                    SelectedToCurrency = new CurrencyWrapper(new Rate(SelectedToCurrency?.CurrencyType ?? ExchangeRates.Base.CurrencyType, SelectedToCurrency?.Value ?? 1));
-                    SelectedToCurrency.CurrencyChangedEvent += ExchangeToFromCurrency;
-
+                    SelectedToCurrency = new CurrencyWrapper(new Rate(ExchangeRates.Base.CurrencyType, 1));
                     SelectedFromCurrency = new CurrencyWrapper(new Rate(ExchangeRates.Base.CurrencyType, 1));
-                    SelectedFromCurrency.CurrencyChangedEvent += ExchangeFromToCurrency;
+
                     LoadSettings();
                 }
-                ExchangeFromToCurrency();
+                SubscribeCalculeExhangeCurrencyEvents();
+                CalculeExchangeRate(SelectedFromCurrency, SelectedToCurrency);
+            }
+        }
+
+        private void UnSubscribeCalculeExhangeCurrencyEvents()
+        {
+            if(SelectedToCurrency != null)
+            {
+                SelectedToCurrency.CurrencyChangedEvent -= ExchangeToFromCurrency;
+            }
+
+            if (SelectedFromCurrency != null)
+            {
+                SelectedFromCurrency.CurrencyChangedEvent -= ExchangeFromToCurrency;
+            }
+        }
+
+        private void SubscribeCalculeExhangeCurrencyEvents()
+        {
+            if (SelectedToCurrency != null)
+            {
+                SelectedToCurrency.CurrencyChangedEvent += ExchangeToFromCurrency;
+            }
+
+            if (SelectedFromCurrency != null)
+            {
+                SelectedFromCurrency.CurrencyChangedEvent += ExchangeFromToCurrency;
             }
         }
 
@@ -212,8 +248,8 @@ namespace CurrencyConverter.UI.ViewModels
         {
             if (SelectedFromCurrency != null && SelectedToCurrency != null)
             {
-                SelectedFromCurrency.CurrencyType = SettingsService.GetValue(Constants.SettingCurrentyTypeFrom);
                 SelectedToCurrency.CurrencyType = SettingsService.GetValue(Constants.SettingCurrentyTypeTo);
+                SelectedFromCurrency.CurrencyType = SettingsService.GetValue(Constants.SettingCurrentyTypeFrom);
             }
         }
         #endregion

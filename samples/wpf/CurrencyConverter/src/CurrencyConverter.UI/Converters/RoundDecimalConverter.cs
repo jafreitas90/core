@@ -19,7 +19,7 @@ namespace CurrencyConverter.UI.Converters
                 throw new InvalidOperationException("Value must be a decimal");
             }
 
-            return Math.Round((decimal)value, (int)parameterResult);
+            return Decimal.Parse(Math.Round((decimal)value, (int)parameterResult).ToString("0.##"));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,
