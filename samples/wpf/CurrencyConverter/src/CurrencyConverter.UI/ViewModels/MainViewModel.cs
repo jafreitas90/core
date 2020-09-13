@@ -67,7 +67,21 @@ namespace CurrencyConverter.UI.ViewModels
         #endregion
 
         #region Properties
+        IViewModelBase _currentViewModel;
+        public IViewModelBase CurrentViewModel
+        {
+            get { return _currentViewModel; }
+            set
+            {
+                if (_currentViewModel != value)
+                {
+                    _currentViewModel = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         public ITestViewModel TestViewModel { get; private set; }
+        public IHistoryViewModel HistoryViewModel { get; private set; }
 
         public float From
         {
@@ -128,9 +142,11 @@ namespace CurrencyConverter.UI.ViewModels
             ILookupProvider<Rate> currencyTypeLookupProvider, 
             IExchangeRateDataProvider exchangeRateDataProvider,
             SimpleNavigationService navigationService,
-            IEventAggregator eventAggregator, ITestViewModel testViewModel
+            IEventAggregator eventAggregator, ITestViewModel testViewModel,
+            IHistoryViewModel historyViewModel
             )
         {
+            HistoryViewModel = historyViewModel;
             TestViewModel = testViewModel;
             _navigationService = navigationService;
             _exchangeRateDataProvider = exchangeRateDataProvider;
@@ -144,6 +160,9 @@ namespace CurrencyConverter.UI.ViewModels
 
             // load data
             Task.Run(async () => await LoadAsync()).GetAwaiter().GetResult();
+
+            CurrentViewModel = HistoryViewModel;
+            //CurrentViewModel = TestViewModel;
         }
         #endregion
 
@@ -163,7 +182,6 @@ namespace CurrencyConverter.UI.ViewModels
                 to = SelectedToCurrency;
             }
             CalculeExchangeRate(from, to);
-            _eventAggregator.GetEvent<HistoryEvent>().Publish();
         }
 
         private void CalculeExchangeRate(CurrencyWrapper from, CurrencyWrapper to)
@@ -175,6 +193,12 @@ namespace CurrencyConverter.UI.ViewModels
             UnSubscribeCalculeExhangeCurrencyEvents();
             to.Value = ExchangeRates.Model.GetExchangeRate(fromCurrencyType, toCurrencyType, amount);
             SubscribeCalculeExhangeCurrencyEvents();
+            _eventAggregator.GetEvent<HistoryEvent>().Publish(new Events.Data.ExchangedHistory()
+            {
+                From = $"{from.Value} {fromCurrencyType}",
+                To = $"{toCurrencyType}",
+                Result = to.Value.ToString()
+            });
         }
 
         private async Task LoadAsync()
@@ -248,9 +272,11 @@ namespace CurrencyConverter.UI.ViewModels
             }
         }
 
-        private async Task NavTestExecute()
+        private Task NavTestExecute()
         {
+            CurrentViewModel = TestViewModel;
             TestViewModel.Load(1);
+            return Task.CompletedTask;
            // await _navigationService.ShowDialogAsync<SettingsWindow>(1);
         }
 

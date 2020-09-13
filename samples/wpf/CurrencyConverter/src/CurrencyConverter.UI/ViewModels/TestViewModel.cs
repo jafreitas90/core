@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CurrencyConverter.UI.ViewModels
 {
-    public interface ITestViewModel
+    public interface ITestViewModel : IViewModelBase
     {
         public void Load(int id);
     }

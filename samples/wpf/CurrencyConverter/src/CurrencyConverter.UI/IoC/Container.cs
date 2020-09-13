@@ -23,7 +23,7 @@ namespace CurrencyConverter.UI.IoC
             services.AddSingleton<IEventAggregator,EventAggregator>();
 
             services.AddTransient<History>();
-            services.AddSingleton<HistoryViewModel>();
+            services.AddTransient<IHistoryViewModel, HistoryViewModel>();
 
             services.AddTransient<TestView>();
             services.AddTransient<ITestViewModel,TestViewModel>();
