@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using CurrencyConverter.Services.Synchronizers;
 using CurrencyConverter.UI.IoC;
+using CurrencyConverter.UI.Navigation;
 using CurrencyConverter.UI.ViewModels;
 using CurrencyConverter.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +26,8 @@ namespace CurrencyConverter.UI
             //MainWindow.Show();
             //_mainViewModel.Load();
 
-            var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            var navigationService = serviceProvider.GetRequiredService<SimpleNavigationService>();
+            _ = navigationService.ShowAsync<MainWindow>();
 
             //var sync = serviceProvider.GetService<ISynchronizer>();
             //sync.RetrieveAsync();

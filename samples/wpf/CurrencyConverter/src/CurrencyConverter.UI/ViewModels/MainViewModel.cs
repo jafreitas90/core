@@ -8,10 +8,14 @@ using CurrencyConverter.Model;
 using CurrencyConverter.Services.Synchronizers;
 using CurrencyConverter.UI.DataProvider;
 using CurrencyConverter.UI.DataProvider.Lookups;
+using CurrencyConverter.UI.Events;
 using CurrencyConverter.UI.Model.Enums;
+using CurrencyConverter.UI.Navigation;
 using CurrencyConverter.UI.Utilities;
 using CurrencyConverter.UI.Utilities.Settings;
+using CurrencyConverter.UI.Views;
 using CurrencyConverter.UI.Wrapper;
+using Prism.Events;
 
 namespace CurrencyConverter.UI.ViewModels
 {
@@ -28,9 +32,12 @@ namespace CurrencyConverter.UI.ViewModels
         private IEnumerable<string> _currencyTypeGroupLookup;
         private IExchangeRateDataProvider _exchangeRateDataProvider;
         private float _from;
+        private SimpleNavigationService _navigationService;
+        private readonly IEventAggregator _eventAggregator;
         #endregion
 
         #region Commands
+        public ICommand NavCommand { get; set; }
         public ICommand SyncCommand { get; private set; }
         public bool IsBusy
         {
@@ -60,6 +67,8 @@ namespace CurrencyConverter.UI.ViewModels
         #endregion
 
         #region Properties
+        public ITestViewModel TestViewModel { get; private set; }
+
         public float From
         {
             get { return _from; }
@@ -115,12 +124,23 @@ namespace CurrencyConverter.UI.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(ISynchronizer synchronizer, ILookupProvider<Rate> currencyTypeLookupProvider, IExchangeRateDataProvider exchangeRateDataProvider)
+        public MainViewModel(ISynchronizer synchronizer, 
+            ILookupProvider<Rate> currencyTypeLookupProvider, 
+            IExchangeRateDataProvider exchangeRateDataProvider,
+            SimpleNavigationService navigationService,
+            IEventAggregator eventAggregator, ITestViewModel testViewModel
+            )
         {
+            TestViewModel = testViewModel;
+            _navigationService = navigationService;
             _exchangeRateDataProvider = exchangeRateDataProvider;
             _currencyTypeLookupProvider = currencyTypeLookupProvider;
             _synchronizer = synchronizer;
             SyncCommand = new AsyncCommand(canExecute: _ => !IsBusy, execute: OnSyncDataExecute, onException: OnSyncDataException);
+            NavCommand = new AsyncCommand(NavTestExecute);
+
+
+            _eventAggregator = eventAggregator;
 
             // load data
             Task.Run(async () => await LoadAsync()).GetAwaiter().GetResult();
@@ -143,6 +163,7 @@ namespace CurrencyConverter.UI.ViewModels
                 to = SelectedToCurrency;
             }
             CalculeExchangeRate(from, to);
+            _eventAggregator.GetEvent<HistoryEvent>().Publish();
         }
 
         private void CalculeExchangeRate(CurrencyWrapper from, CurrencyWrapper to)
@@ -225,6 +246,12 @@ namespace CurrencyConverter.UI.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private async Task NavTestExecute()
+        {
+            TestViewModel.Load(1);
+           // await _navigationService.ShowDialogAsync<SettingsWindow>(1);
         }
 
         private void OnSyncDataException(Exception ex)
